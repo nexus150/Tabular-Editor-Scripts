@@ -1,0 +1,34 @@
+//Author: Matt Allington, sólo hice cambios minimos.
+
+// Con el siguiente script cambio sólo las medidas seleccionadas
+var FromString = "( campo / 60 ) * 5";
+var ToString = "campo";
+foreach (var m in Selected.Measures)
+    {
+        //m.Name = m.Name.Replace(FromString,ToString);
+        m.Expression = m.Expression.Replace(FromString,ToString);
+        /* Cycle over all measures in model and replaces the 
+           FromString with the ToString in the measure names*/
+    }
+
+
+ // Con el siguiente script cambio todas las medidas
+var FromString = "CALCULATE(SUM(Sales[ExtendedAmount])";
+var ToString = "CALCULATE([Total Sales]";
+foreach (var m in Model.AllMeasures)
+    {
+        m.Expression = m.Expression.Replace(FromString,ToString);
+        /* Cycle over all measures in model and replaces the 
+           FromString with the ToString */
+    }
+ 
+ 
+// Con el siguiente script cambio los titulos de las medidas
+var FromString = "Total Sales";
+var ToString = "Total Revenue";
+foreach (var m in Model.AllMeasures)
+    {
+        m.Name = m.Name.Replace(FromString,ToString);
+        /* Cycle over all measures in model and replaces the 
+           FromString with the ToString in the measure names*/
+    }
