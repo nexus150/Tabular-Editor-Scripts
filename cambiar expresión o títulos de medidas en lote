@@ -1,4 +1,5 @@
 //Author: Matt Allington, sólo hice cambios minimos.
+// Importante: Recuerden guardar un respaldo de su .pbix / .bim antes de utilizar Tabular Editor, no hay garantías.
 
 // Con el siguiente script cambio sólo las medidas seleccionadas
 var FromString = "( campo / 60 ) * 5";
@@ -32,3 +33,6 @@ foreach (var m in Model.AllMeasures)
         /* Cycle over all measures in model and replaces the 
            FromString with the ToString in the measure names*/
     }
+    
+ //En cualquiera de los 2 scripts que cambian el cuerpo de la  medida, si quieren formatearla con Dax Formatter sólo hay que agregar esta linea luego del replace:
+ m.Expression = FormatDax(m.Expression);
