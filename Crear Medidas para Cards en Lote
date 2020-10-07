@@ -1,0 +1,6 @@
+// Crear versión de cada medida con coalesce para colocar en tarjetas
+foreach (var m in Selected.Measures)
+    {
+        string medida = m.Name;
+        Model.Tables["Tabla"].AddMeasure(medida + " for card", "Coalesce([" +medida+ "],0)", "Coalesce");
+    }
