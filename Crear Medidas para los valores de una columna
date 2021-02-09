@@ -1,0 +1,18 @@
+// Para este caso se esta usando una tabla de paises
+string query = "EVALUATE FILTER(VALUES(Dim_Sociedades[Pais]),NOT(ISBLANK(Dim_Sociedades[Pais]))) ORDER BY Dim_Sociedades[Pais]";
+
+foreach(var m in Selected.Measures)
+{
+    string medida = m.Name;
+    using (var reader = Model.Database.ExecuteReader(query)){
+    
+    //Create a loop for every row in the resulset   
+    while(reader.Read()){
+     string myPais = reader.GetValue(0).ToString();
+     string measureName = medida + " " + myPais;    // Name
+     string myExpression = "CALCULATE([" +medida+ "],'Dim_Sociedades'[Pais] = \"" + myPais +  "\")";  // DAX expresion
+     string folder = medida + " de paises"; // DisplayFolder
+     Model.Tables["DAX Medidas"].AddMeasure(measureName,myExpression,folder);
+    }
+ }
+}
