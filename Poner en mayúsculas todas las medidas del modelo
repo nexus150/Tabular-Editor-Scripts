@@ -1,0 +1,13 @@
+// Seleccionadas
+foreach(var m in Selected.Measures) {
+    // Year-to-date:
+    m.Name = m.Name.ToUpper();
+    
+}
+
+//Todas
+foreach(var m in Model.AllMeasures) {
+    // Year-to-date:
+    m.Name = m.Name.ToUpper();
+    
+}    
