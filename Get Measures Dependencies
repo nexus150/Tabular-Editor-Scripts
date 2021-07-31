@@ -1,0 +1,13 @@
+string query_template = @"select [REFERENCED_OBJECT] from $SYSTEM.DISCOVER_CALC_DEPENDENCY where [OBJECT_TYPE] = 'MEASURE' and [REFERENCED_OBJECT_TYPE] = 'MEASURE' and [OBJECT]='{0}'" ;
+foreach(var m in Selected.Measures)
+{
+    string medida = m.Name;
+    string query = string.Format(query_template, medida);
+    using (var reader = Model.Database.ExecuteReader(query)){    
+    //Create a loop for every row in the resulset   
+    while(reader.Read()){
+        string DependentMeasure = reader.GetValue(0).ToString();
+        DependentMeasure.Output();
+    }
+ }
+}
