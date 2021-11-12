@@ -1,0 +1,32 @@
+string query = "EVALUATE FILTER(VALUES('Product'[Color]) ,  not(ISBLANK('Product'[Color])) )" ;
+using (var reader = Model.Database.ExecuteReader(query))
+{
+    // Create a loop for every row in the resultset
+    while(reader.Read())
+    {
+        string myColour = reader.GetValue(0).ToString();
+        string measureName = myColour;
+        string myExpression = "CALCULATE( SUM('Sales'[Sales Amount]), 'Product'[Color] = \""  + myColour + "\")";
+      
+        Model.Tables["Sales"].AddMeasure(measureName, myExpression, "AutoMeasures");
+    }
+}
+
+
+
+string query = "EVALUATE FILTER(VALUES('Product'[Color]),NOT(ISBLANK('Product'[Color]))) ORDER BY 'Product'[Color]";
+foreach(var m in Selected.Measures)
+{
+    string medida = m.Name;
+    using (var reader = Model.Database.ExecuteReader(query)){
+    
+    //Create a loop for every row in the resulset   
+    while(reader.Read()){
+     string myColour = reader.GetValue(0).ToString();
+     string measureName = medida + " " + myColour;    // Name
+     string myExpression = "CALCULATE([" +medida+ "],'Product'[Color] = \"" + myColour+  "\")";  // DAX expresion
+     string folder = medida + " de colores"; // DisplayFolder
+     Model.Tables["Sales"].AddMeasure(measureName,myExpression,folder);
+    }
+ }
+}
