@@ -1,0 +1,34 @@
+//Codigo Adaptado de https://www.elegantbi.com/post/modelautobuild
+//Muchas gracias a Michael Kovalsky por sus enormes aportes
+
+// Este script lee la información para crear roles desde una tabla auxiliar en el modelo y crea todos los roles.
+
+//RolesAuxliar debe ser una tabla con 3 columnas, nombre del rol, tabla y filtro RLS, 
+//debe tener una fila por cada combinación de Rol y Tabla a asegurar
+//RoleName	TableName	FilterExpression
+//Group 1	Product	'Product'[Color] in { "RED","BLUE","BLACK"}
+//Group 1	Sales Territory	'Sales Territory'[Country] in { "United States","France"}
+//Group 2	Product	'Product'[Color] in { "RED","YELLOW"}
+
+string query = "EVALUATE RolesAuxiliar";
+
+
+using (var reader = Model.Database.ExecuteReader(query)){
+    
+    //Create a loop for every row in the resulset   
+    while(reader.Read()){
+        
+  
+     string MyRol = reader.GetValue(0).ToString();
+     string rls = reader.GetValue(2).ToString();
+     string Table = reader.GetValue(1).ToString();
+     if (!Model.Roles.ToList().Any(x => x.Name == MyRol))
+     {  
+        var obj = Model.AddRole(MyRol);
+             obj.ModelPermission = ModelPermission.Read;
+     }   
+
+     Model.Tables[Table].RowLevelSecurity[MyRol] = rls; 
+
+    }
+ }
