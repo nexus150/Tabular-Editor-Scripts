@@ -32,3 +32,30 @@ using (var reader = Model.Database.ExecuteReader(query)){
 
     }
  }
+ // Fin Script 1
+ --------------------------------------------------------------------------------------------
+ //// Esta variacion crea los roles en función de los campos de tablas del modelo de forma dinámica
+ string query = "EVALUATE FILTER(CROSSJOIN(VALUES('Product'[Color]),VALUES('Sales Territory'[Country])),NOT(ISBLANK('Product'[Color]))) ORDER BY 'Product'[Color]";;
+
+
+using (var reader = Model.Database.ExecuteReader(query)){
+    //Create a loop for every row in the resulset   
+    while(reader.Read()){
+        
+     string Color = reader.GetValue(0).ToString();
+     string Pais =  reader.GetValue(1).ToString() ; 
+     string MyRol = "Rol con permisos en color " + Color + " y pais " + Pais ;
+     string rls_color = "Product[color]='" + Color + "'" ;
+     string rls_pais = "'Sales Terrotory'[pais]='" + Pais + "'" ;
+     if (!Model.Roles.ToList().Any(x => x.Name == MyRol))
+     {  
+        var obj = Model.AddRole(MyRol);
+             obj.ModelPermission = ModelPermission.Read;
+     }   
+
+     Model.Tables["Product"].RowLevelSecurity[MyRol] = rls_color;
+     Model.Tables["Sales Territory"].RowLevelSecurity[MyRol] = rls_pais;  
+
+    }
+
+ }
