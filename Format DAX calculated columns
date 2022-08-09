@@ -1,0 +1,22 @@
+//This C# Script for Tabular Editor, formats all the calculated columns of the model
+//using the SQLBI.COM service https://www.daxformatter.com/
+//please use the version with Selected.Columns as long as you can
+//to minimize the load on the service so that we can all enjoy it.
+
+// Calculated Columns (All)
+foreach(var m in Model.AllColumns)
+{
+    if(m.Type.ToString() == "Calculated"){   
+      var y = m  as CalculatedColumn;   
+      y.FormatDax();
+    }
+}   
+
+// Calculated Columns (Only Selected)
+foreach(var m in Selected.Columns)
+{
+    if(m.Type.ToString() == "Calculated"){   
+      var y = m  as CalculatedColumn;   
+      y.FormatDax();
+    }
+}   
