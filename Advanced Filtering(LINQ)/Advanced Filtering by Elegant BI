@@ -1,0 +1,129 @@
+Advanced Filtering Examples in Tabular Editor with LINQ
+Updated: May 19, 2021
+Created by: Michael Kovalsky (https://www.elegantbi.com)
+Original Content URL: https://www.elegantbi.com/post/advancedfiltering
+
+
+These filtering techniques are done in Tabular Editor, so make sure you have it installed. Within Tabular Editor, 
+the filtering commands below are entered into the highlighted 'Filter' box.
+
+
+
+
+View only calculated columns
+
+Since calculated columns should be avoided, here is an easy way to find them (and hopefully turn them into data columns!).
+
+:ObjectType = "Column" and Type = "Calculated"
+
+View Bi-Directional Relationships
+
+This filters the object list to show only relationships that are enabled for bi-directional crossfiltering.
+
+:ObjectType = "Relationship" and CrossFilteringBehavior = "BothDirections"
+
+View Many-to-Many Relationships
+
+This filters the object list to show only many-to-many relationships.
+
+:ObjectType = "Relationship" and FromCardinality = "Many" and ToCardinality = "Many"
+
+View Measures that use a particular DAX function
+
+If you want to search which measures use a particular function - just replace where it says 'SWITCH' below with the function you want to search.
+
+:ObjectType = "Measure" and RegEx.IsMatch(Expression,"(?i)SWITCH\s*\(")
+
+
+View Multi-Partitioned Tables
+
+This shows all tables in your model that have more than 1 partition.
+
+:ObjectType = "Table" and Partitions.Count > 1
+
+View KPIs
+
+This shows all the measures in your model which are also KPIs.
+
+:ObjectType = "Measure" and KPI != null
+
+View Columns Which Use Sort-By Columns
+
+This shows all columns in your model which are sorted by another column within the model.
+
+:ObjectType = "Column" and SortByColumn != null
+
+View Sort-by Columns
+
+This shows all columns in your model which are used in order to sort other columns.
+
+
+:ObjectType = "Column" and Model.AllColumns.Any(SortByColumn.Name == current.Name)
+
+View Calculated Tables
+
+This shows all the calculated tables in your model.
+
+:ObjectType = "Table" and SourceType = "Calculated"
+
+View Calculated Tables
+
+This shows all the calculation groups in your model.
+
+:ObjectType = "CalculationGroupTable"
+
+View Direct Query Tables/Partitions
+
+This shows all the partitions in your model which are in Direct Query mode.
+
+:ObjectType = "Partition" and (Mode = "DirectQuery" or (Model.DefaultMode = "DirectQuery" and Mode = "Default" || Mode = "DirectQuery"))
+
+View Import mode Tables/Partitions
+
+This shows all the partitions in your model which are in Import mode.
+
+:ObjectType = "Partition" and (Mode = "Import" or (Model.DefaultMode = "Import" and Mode = "Default" || Mode = "Import"))
+
+View Relationship columns
+
+This shows all the columns in your model which are used in relationships
+
+:ObjectType = "Column" and UsedInRelationships.Any()
+
+View foreign key columns
+
+This shows columns used on the 'from' side of relationships (generally foreign keys).
+
+:ObjectType = "Column" and UsedInRelationships.Any(FromTable.Name == current.Table.Name and FromColumn.Name = current.Name)
+
+View Primary key columns
+
+This shows columns used on the 'to' side of relationships (generally primary keys).
+
+:ObjectType = "Column" and UsedInRelationships.Any(ToTable.Name == current.Table.Name and ToColumn.Name = current.Name)
+
+VIEW Objects with blank descriptions
+
+This shows all (relevant) objects with no description. 
+
+:string.IsNullOrWhiteSpace(Description)
+
+VIEW Measures with no format string
+
+This shows all measures in your model that are not formatted (i.e. currency, whole number).
+
+:ObjectType = "Measure" and string.IsNullOrWhiteSpace(FormatString)
+
+SEARCH FOR Text within Partition Queries 
+
+This allows you to search for partition queries which contain a specified text string. Simply replace 'SEARCH TEXT' with the text you want to search.
+
+
+:ObjectType = "Partition" and RegEx.IsMatch(Query,"(?i)SEARCH TEXT")
+
+Partitions used by a specific data source
+
+This allows you to search for all partitions which use a specific data source.
+
+
+:ObjectType = "Partition" and Datasource.Name = "SqlServer MyServerName"
