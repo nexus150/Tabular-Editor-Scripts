@@ -1,5 +1,5 @@
 //Created by Daniel Otykier (@DOtykier)
-//Modified by Ricardo Rincón in order to create o create the field parameter with all the columns / measures of the model 
+//Modified by Ricardo Rincón (@nexus150) in order to create the field parameter with all the columns / measures of the model 
 //(except for those explicitly excluded in the Objects variable) and add the table name as the final field in the field parameter
 //Original SCript By Daniel: https://github.com/TabularEditor/TabularEditor3/issues/541#issuecomment-1129228481 
 
