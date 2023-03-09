@@ -2,7 +2,7 @@
 //Muchas gracias a Michael Kovalsky por sus enormes aportes
 
 // Este script lee la información para crear roles desde una tabla auxiliar en el modelo y crea todos los roles.
-
+// Todos estos Scripts funcionan en el modelo de AdventureWorks de Ejemplo
 //RolesAuxliar debe ser una tabla con 3 columnas, nombre del rol, tabla y filtro RLS, 
 //debe tener una fila por cada combinación de Rol y Tabla a asegurar
 //RoleName	TableName	FilterExpression
@@ -34,8 +34,8 @@ using (var reader = Model.Database.ExecuteReader(query)){
  }
  // Fin Script 1
  --------------------------------------------------------------------------------------------
- //// Esta variacion crea los roles en función de los campos de tablas del modelo de forma dinámica
- string query = "EVALUATE FILTER(CROSSJOIN(VALUES('Product'[Color]),VALUES('Sales Territory'[Country])),NOT(ISBLANK('Product'[Color]))) ORDER BY 'Product'[Color]";;
+//// Esta variacion crea los roles en función de los campos de tablas del modelo de forma dinámica
+string query = "EVALUATE FILTER(CROSSJOIN(VALUES('Product'[Color]),VALUES('Sales Territory'[Country])),NOT(ISBLANK('Product'[Color]))) ORDER BY 'Product'[Color]";;
 
 
 using (var reader = Model.Database.ExecuteReader(query)){
@@ -45,8 +45,8 @@ using (var reader = Model.Database.ExecuteReader(query)){
      string Color = reader.GetValue(0).ToString();
      string Pais =  reader.GetValue(1).ToString() ; 
      string MyRol = "Rol con permisos en color " + Color + " y pais " + Pais ;
-     string rls_color = "Product[color]='" + Color + "'" ;
-     string rls_pais = "'Sales Terrotory'[pais]='" + Pais + "'" ;
+     string rls_color = "Product[color]=\"" + Color + "\"" ;
+     string rls_pais = "'Sales Territory'[country]=\"" + Pais + "\"" ;
      if (!Model.Roles.ToList().Any(x => x.Name == MyRol))
      {  
         var obj = Model.AddRole(MyRol);
@@ -59,3 +59,34 @@ using (var reader = Model.Database.ExecuteReader(query)){
     }
 
  }
+ 
+ //// Esta variacion crea los roles en función de los campos de tablas del modelo de forma dinámica, 
+ //pero con una tabla muy grande ( todos los valores de producto, solo por diversion, a ver hasta cuantos roles se pueden crear en Power BI
+ // Este script genera mas de 20K roles
+ 
+ string query = "EVALUATE FILTER(CROSSJOIN(VALUES('Product'[Color]),VALUES('Sales Territory'[Country]), VALUES('Product'[ProductKey])),NOT(ISBLANK('Product'[Color]))) ORDER BY 'Product'[Color]";
+
+
+using (var reader = Model.Database.ExecuteReader(query)){
+    //Create a loop for every row in the resulset   
+    while(reader.Read()){
+        
+     string Color = reader.GetValue(0).ToString();
+     string Pais =  reader.GetValue(1).ToString() ; 
+     string Producto =  reader.GetValue(2).ToString() ;
+     string MyRol = "Rol con permisos en color " + Color + " y pais " + Pais + "y producto " + Producto ;
+     string rls_color = "Product[color]=\"" + Color + "\"" + "&& Product[product]=" + Producto;
+     string rls_pais = "'Sales Territory'[country]=\"" + Pais + "\"" ;
+     if (!Model.Roles.ToList().Any(x => x.Name == MyRol))
+     {  
+        var obj = Model.AddRole(MyRol);
+             obj.ModelPermission = ModelPermission.Read;
+     }   
+
+     Model.Tables["Product"].RowLevelSecurity[MyRol] = rls_color;
+     Model.Tables["Sales Territory"].RowLevelSecurity[MyRol] = rls_pais;  
+
+    }
+
+ }
+ 
