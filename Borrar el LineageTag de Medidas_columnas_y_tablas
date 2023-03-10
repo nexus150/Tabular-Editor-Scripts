@@ -1,0 +1,20 @@
+foreach (var m in Model.AllMeasures)
+    {
+        m.LineageTag = "";
+        /* Cycle over all measures in model and replaces the 
+           FromString with the ToString in the measure names*/
+    }
+
+foreach (var m in Model.Tables)
+    {
+        m.LineageTag = "";
+        /* Cycle over all measures in model and replaces the 
+           FromString with the ToString in the measure names*/
+    }
+       
+foreach (var m in Model.AllColumns)
+    {
+        m.LineageTag = "";
+        /* Cycle over all measures in model and replaces the 
+           FromString with the ToString in the measure names*/
+    }
