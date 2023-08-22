@@ -1,0 +1,41 @@
+// This Script is a variation of "Create measures from columns" from Daniel Otykier 
+// Available in: https://docs.tabulareditor.com/te2/Useful-script-snippets.html#create-measures-from-columns
+// Thanks to Erik Svensen (https://www.linkedin.com/in/eriksvensen/) by the idea and the inspiration.
+// The diference with the original is that the display folder is read from a table inside the model with that structure:
+// Table: FACTDESCRIPTION , Columns: FACTDESCRIPTION[Fact_Column], FACTDESCRIPTION[fact_group]
+// being FACTDESCRIPTION[Fact_Column] the fully qualified name of the column and FACTDESCRIPTION[fact_group] the display folder
+// if you want assign the measure in more than one Display Folder you can do this by placing several display folders in the field separated by semicolons, 
+//or by placing several lines with the same column and different display folders
+
+foreach(var c in Selected.Columns)
+{
+    string DispFolder = "";
+    string myExpression = @"EVALUATE ROW(""DispFolder"",CONCATENATEX (FILTER (FACTDESCRIPTION,FACTDESCRIPTION[Fact_Column] = ""{0}""),FACTDESCRIPTION[fact_group],"";""))";
+    string myExpression2 = string.Format(myExpression, c.DaxObjectFullName);
+    using (var reader = Model.Database.ExecuteReader(myExpression2)){
+            
+        //Create a loop for every row in the resulset   
+        while(reader.Read()){
+            DispFolder = reader.GetValue(0).ToString();
+        }
+    };
+    
+    var newMeasure = c.Table.AddMeasure(
+        "Sum of " + c.Name,                    // Name
+        "SUM(" + c.DaxObjectFullName + ")",    // DAX expression
+        
+         
+        DispFolder
+        
+        // c.DisplayFolder                        // Display Folder
+    );
+    
+    // Set the format string on the new measure:
+    newMeasure.FormatString = "0.00";
+
+    // Provide some documentation:
+    newMeasure.Description = "This measure is the sum of column " + c.DaxObjectFullName;
+
+    // Hide the base column:
+    c.IsHidden = true;
+}
