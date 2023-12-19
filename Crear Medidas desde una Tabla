@@ -1,0 +1,18 @@
+// Este script crea las medidas de acuerdo a las filas de una tabla de nombre Auxiliar_medidas, que tiene simplemente 2 campos, nombre y descripción
+// EL nombre de los campos es irrelevante ya qu ese acceden por posición, así que deben estar en ese orden: Nombre primero y Descripción segundo
+// Se puede agregar también el código de las medidas en una tercera columna y ajustar el script, pero en este caso la medida simplemente hace un countrows de la tabla de hechos multiplicado por un numero aleatorio
+// Ideal para hacer prototipos teniendo medidas con valores ficticios, y que los creadores de informes puedan maquetar antes de que esté lista la lógica de las medidas
+string query = "EVALUATE Auxiliar_medidas" ;
+using (var reader = Model.Database.ExecuteReader(query))
+{
+    // Create a loop for every row in the resultset
+    while(reader.Read())
+    {
+        string Medida = reader.GetValue(0).ToString();
+        string Descripcion = reader.GetValue(1).ToString();
+        string myExpression = "COUNTROWS('Fact Sales')  * RAND()";
+      
+        var newMeasure = Model.Tables["Medidas"].AddMeasure(Medida, "COUNTROWS('Fact Sales')  * RAND()", "Medidas Iniciales");
+        newMeasure.Description = Descripcion ;
+    }
+}
