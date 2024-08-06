@@ -1,0 +1,6 @@
+Model.Roles.Output();
+Model.Roles["Role Name"].Output();
+Model.Roles["Role Name"].Members.Output();
+Model.Roles["Role Name"].Members["Member ID"].Output();
+Model.Roles["Role Name"].Members.Where(n => n.MemberName == "Member Name").Output();
+Model.Roles["Role Name"].RowLevelSecurity["Table Name"].Output();
