@@ -1,0 +1,6 @@
+foreach(var c in Selected.Tables)
+{
+    c.DataCategory = "Time";
+    c.Columns["Date"].IsKey = true;
+
+} 
